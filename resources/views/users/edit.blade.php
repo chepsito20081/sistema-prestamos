@@ -28,7 +28,7 @@
                         <select name="role" id="role" class="w-full border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3 bg-white" required>
                             <option value="student" {{ $user->role == 'student' ? 'selected' : '' }}>Student (Estudiante)</option>
                             <option value="encargado" {{ $user->role == 'encargado' ? 'selected' : '' }}>Encargado</option>
-                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin (Administrador)</option>
+                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Encargado</option>
                         </select>
                     </div>
 

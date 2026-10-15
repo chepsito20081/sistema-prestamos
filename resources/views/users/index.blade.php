@@ -49,7 +49,7 @@
                                             {{ $usuario->role == 'admin' ? 'bg-purple-100 text-purple-800 border border-purple-200' : '' }}
                                             {{ $usuario->role == 'encargado' ? 'bg-blue-100 text-blue-800 border border-blue-200' : '' }}
                                             {{ $usuario->role == 'student' ? 'bg-gray-100 text-gray-800 border border-gray-200' : '' }}">
-                                            {{ ucfirst($usuario->role) }}
+                                            {{ $usuario->role == 'admin' ? 'Encargado' : ucfirst($usuario->role) }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap font-medium">
