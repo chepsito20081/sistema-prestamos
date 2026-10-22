@@ -98,10 +98,17 @@
                                     <td class="px-6 py-4 whitespace-nowrap font-medium">
                                         @if(Auth::user()->role === 'admin')
                                             <a href="{{ route('equipos.edit', $equipo->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3 font-semibold">Editar</a>
-                                            <form action="{{ route('equipos.destroy', $equipo->id) }}" method="POST" class="inline">
+                                            
+                                            <!-- Formulario de Eliminación con Doble Alerta -->
+                                            <form id="form-eliminar-{{ $equipo->id }}" action="{{ route('equipos.destroy', $equipo->id) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este equipo?')" class="text-red-600 hover:text-red-900 font-semibold">
+                                                
+                                                <button type="button" 
+                                                        class="btn-eliminar text-red-600 hover:text-red-900 font-semibold"
+                                                        data-id="{{ $equipo->id }}"
+                                                        data-prestado="{{ $equipo->estado == 'prestado' ? 'true' : 'false' }}"
+                                                        data-estudiante="{{ $equipo->prestamoActual?->usuario?->name ?? 'Estudiante desconocido' }}">
                                                     Eliminar
                                                 </button>
                                             </form>
@@ -129,4 +136,34 @@
             </div>
         </div>
     </div>
+
+    <!-- Script para la doble alerta de eliminación -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.btn-eliminar').forEach(boton => {
+                boton.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    const estaPrestado = this.getAttribute('data-prestado') === 'true';
+                    const nombreEstudiante = this.getAttribute('data-estudiante');
+                    const formulario = document.getElementById(`form-eliminar-${id}`);
+
+                    // 1. Primera Alerta (Confirmación general)
+                    const primeraAlerta = confirm("¿Estás seguro de que deseas eliminar este equipo del sistema?");
+
+                    if (primeraAlerta) {
+                        // 2. Segunda Alerta (Solo si el equipo está prestado)
+                        if (estaPrestado) {
+                            const segundaAlerta = confirm(`⚠️ ATENCIÓN: Este dispositivo se encuentra actualmente prestado al estudiante: "${nombreEstudiante}".\n\n¿Estás completamente seguro de eliminarlo de todas formas?`);
+                            
+                            if (segundaAlerta) {
+                                formulario.submit();
+                            }
+                        } else {
+                            formulario.submit();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </x-app-layout>
