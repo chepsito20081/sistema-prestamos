@@ -99,6 +99,23 @@
                                         @if(Auth::user()->role === 'admin')
                                             <a href="{{ route('equipos.edit', $equipo->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3 font-semibold">Editar</a>
                                             
+                                            @php
+                                                $prestamoActivo = $equipo->prestamos()->where('estado', 'prestado')->first();
+                                                $nombreEstudiante = 'Estudiante';
+
+                                                if ($prestamoActivo) {
+                                                    // Buscamos todas las posibles relaciones de usuario
+                                                    $u = $prestamoActivo->user ?? ($prestamoActivo->usuario ?? ($prestamoActivo->alumno ?? ($prestamoActivo->persona ?? null)));
+                                                    
+                                                    if ($u) {
+                                                        $nombreEstudiante = $u->name ?? ($u->nombres ?? ($u->nombre ?? ($u->full_name ?? ($u->email ?? 'Usuario sin nombre'))));
+                                                    } else {
+                                                        // Si el nombre está directamente en la tabla de préstamos
+                                                        $nombreEstudiante = $prestamoActivo->name ?? ($prestamoActivo->nombres ?? ($prestamoActivo->nombre ?? ($prestamoActivo->student_name ?? 'Préstamo sin usuario')));
+                                                    }
+                                                }
+                                            @endphp
+
                                             <!-- Formulario de Eliminación con Doble Alerta -->
                                             <form id="form-eliminar-{{ $equipo->id }}" action="{{ route('equipos.destroy', $equipo->id) }}" method="POST" class="inline">
                                                 @csrf
@@ -108,7 +125,7 @@
                                                         class="btn-eliminar text-red-600 hover:text-red-900 font-semibold"
                                                         data-id="{{ $equipo->id }}"
                                                         data-prestado="{{ $equipo->estado == 'prestado' ? 'true' : 'false' }}"
-                                                        data-estudiante="{{ $equipo->prestamoActual?->usuario?->name ?? 'Estudiante desconocido' }}">
+                                                        data-estudiante="{{ $nombreEstudiante }}">
                                                     Eliminar
                                                 </button>
                                             </form>

@@ -28,7 +28,7 @@ class PrestamoController extends Controller
             $query->where(function($q) use ($search) {
                 $q->whereHas('equipo', function($subq) use ($search) {
                     $subq->where('nombre', 'like', "%{$search}%")
-                          ->orWhere('codigo_inventario', 'like', "%{$search}%");
+                         ->orWhere('codigo_inventario', 'like', "%{$search}%");
                 })->orWhereHas('user', function($subq) use ($search) {
                     $subq->where('name', 'like', "%{$search}%");
                 });
@@ -96,8 +96,18 @@ class PrestamoController extends Controller
         ]);
 
         // Liberar el equipo nuevamente
-        $prestamo->equipo->update(['estado' => 'disponible']);
+        if ($prestamo->equipo) {
+            $prestamo->equipo->update(['estado' => 'disponible']);
+        }
 
         return redirect()->route('prestamos.index')->with('success', 'Equipo devuelto correctamente.');
+    }
+
+    /**
+     * Finalizar un préstamo (Alias o método directo para la vista).
+     */
+    public function finalizar($id)
+    {
+        return $this->devolver($id);
     }
 }

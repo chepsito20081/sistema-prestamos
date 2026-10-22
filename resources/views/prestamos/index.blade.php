@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 sm:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 space-y-6">
 
                 <!-- Encabezado con Botón de Solicitud -->
@@ -41,12 +41,12 @@
                         <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             @forelse ($prestamos as $prestamo)
                                 <tr class="hover:bg-gray-50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $prestamo->equipo->nombre ?? 'Equipo no disponible' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $prestamo->user->name ?? 'Usuario desconocido' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $prestamo->equipo?->nombre ?? 'Equipo no disponible' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $prestamo->user?->name ?? ($prestamo->usuario?->name ?? 'Estudiante') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">{{ $prestamo->fecha_prestamo }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">{{ $prestamo->fecha_devolucion ?? 'Pendiente' }}</td>
-                                    
-                                    <!-- Badges de Estado con Colores Modernos -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">{{ $prestamo->fecha_devolucion_esperada ?? 'Pendiente' }}</td>
+
+                                    <!-- Badges de Estado -->
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                             {{ $prestamo->estado == 'devuelto' || $prestamo->estado == 'Finalizado' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-yellow-100 text-yellow-800 border border-yellow-200' }}">
@@ -56,12 +56,23 @@
                                         </span>
                                     </td>
 
+                                    <!-- Acciones Restringidas por Rol -->
                                     <td class="px-6 py-4 whitespace-nowrap font-medium text-sm">
-                                        @if($prestamo->estado != 'devuelto' && $prestamo->estado != 'Finalizado')
-                                            <!-- Aquí puedes colocar la ruta de registrar devolución si la tienes configurada -->
-                                            <span class="text-indigo-600 hover:text-indigo-900 cursor-pointer font-semibold">Finalizar</span>
+                                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'encargado')
+                                            @if($prestamo->estado != 'devuelto' && $prestamo->estado != 'Finalizado')
+                                                <!-- Formulario para finalizar (Solo Admin / Encargado) -->
+                                                <form action="{{ route('prestamos.finalizar', $prestamo->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de finalizar este préstamo y liberar el equipo?');">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="text-indigo-600 hover:text-indigo-900 font-semibold">
+                                                        Finalizar
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-gray-400 text-xs italic">Completado</span>
+                                            @endif
                                         @else
-                                            <span class="text-gray-400 text-xs italic">Completado</span>
+                                            <span class="text-gray-400 text-xs italic">Solo lectura</span>
                                         @endif
                                     </td>
                                 </tr>

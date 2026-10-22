@@ -16,4 +16,10 @@ class Equipo extends Model
     {
         return $this->hasMany(Prestamo::class);
     }
+
+    // NUEVO: Para obtener el préstamo actual y su usuario asociado
+    public function prestamoActual()
+    {
+        return $this->hasOne(Prestamo::class)->latest();
+    }
 }

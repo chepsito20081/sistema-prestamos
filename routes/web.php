@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
     // Módulo de Préstamos
     Route::resource('prestamos', PrestamoController::class)->except(['edit', 'update', 'show']);
     Route::patch('/prestamos/{id}/devolver', [PrestamoController::class, 'devolver'])->name('prestamos.devolver');
+    Route::patch('/prestamos/{id}/finalizar', [PrestamoController::class, 'finalizar'])->name('prestamos.finalizar');
 
     // Módulo de Usuarios
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
