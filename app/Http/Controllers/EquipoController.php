@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
+use App\Models\Prestamo;
 use Illuminate\Http\Request;
 
 class EquipoController extends Controller
@@ -121,6 +122,20 @@ class EquipoController extends Controller
         }
 
         $equipo = Equipo::findOrFail($id);
+
+        // Verificar si el equipo tiene un préstamo activo actualmente
+        $prestamoActivo = Prestamo::where('equipo_id', $equipo->id)
+            ->where('estado', 'prestado')
+            ->with(['user', 'usuario'])
+            ->first();
+
+        if ($prestamoActivo) {
+            $nombreEstudiante = optional($prestamoActivo->user)->name ?? (optional($prestamoActivo->usuario)->name ?? 'un estudiante');
+            
+            return redirect()->route('equipos.index')
+                ->with('error', "No se puede eliminar el equipo porque se encuentra prestado a: {$nombreEstudiante}.");
+        }
+
         $equipo->delete();
 
         return redirect()->route('equipos.index')->with('success', 'Equipo eliminado exitosamente.');

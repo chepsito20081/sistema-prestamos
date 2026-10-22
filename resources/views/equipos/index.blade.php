@@ -9,6 +9,22 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 space-y-6">
 
+                <!-- Mensajes de Error o Alerta (Ej. Equipo prestado) -->
+                @if (session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm shadow" role="alert">
+                        <strong class="font-bold">¡Atención! </strong>
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                    </div>
+                @endif
+
+                <!-- Mensaje de Éxito -->
+                @if (session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative text-sm shadow" role="alert">
+                        <strong class="font-bold">¡Éxito! </strong>
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                @endif
+
                 <!-- Barra superior: Botón y Buscador alineados -->
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     
@@ -46,13 +62,6 @@
                     </form>
 
                 </div>
-
-                <!-- Mensaje de Éxito -->
-                @if (session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative text-sm" role="alert">
-                        <span class="block sm:inline">{{ session('success') }}</span>
-                    </div>
-                @endif
 
                 <!-- Tabla de Equipos -->
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
